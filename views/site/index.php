@@ -5,10 +5,13 @@ use yii\helpers\Url;
 $this->title = 'Busca Mercado Livre';
 
 $exemplos = [
-    'MLB4540404727',
-    'MLB6478021916',
-    'MLB6478017024',
+    'MLB1381222244',
+    'MLB-1689836021',
+    'MLB-1570636742',
 ];
+
+// URL base para o JS montar o redirect
+$baseUrl = Url::to(['produto/detalhes']) . '/';
 ?>
 
 <div class="site-index container py-5">
@@ -21,15 +24,15 @@ $exemplos = [
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card border-0 shadow p-3">
-                <?= Html::beginForm(['produto/detalhes'], 'get', ['class' => 'input-group']) ?>
+                <div class="input-group">
                     <?= Html::textInput('meli_id', '', [
                         'class'       => 'form-control form-control-lg',
-                        'placeholder' => 'Ex: MLB59773991',
+                        'placeholder' => 'Ex: MLB4540404727',
                         'id'          => 'meli_id_input',
                         'required'    => true,
                     ]) ?>
-                    <?= Html::submitButton('Buscar', ['class' => 'btn btn-primary px-4']) ?>
-                <?= Html::endForm() ?>
+                    <button class="btn btn-primary px-4" onclick="buscarProduto()">Buscar</button>
+                </div>
             </div>
 
             <!-- IDs de exemplo clicáveis -->
@@ -48,3 +51,16 @@ $exemplos = [
     </div>
 
 </div>
+
+<script>
+function buscarProduto() {
+    var id = document.getElementById('meli_id_input').value.trim();
+    if (!id) return;
+    window.location.href = '<?= Url::to(['produto/']) ?>/' + id.replace(/-/g, '').toUpperCase();
+}
+
+// Permite buscar pressionando Enter
+document.getElementById('meli_id_input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') buscarProduto();
+});
+</script>
