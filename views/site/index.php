@@ -14,8 +14,8 @@ $exemplos = [
 <div class="site-index container py-5">
 
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Meli Search</h1>
-        <p class="text-muted">Busque informações detalhadas de produtos</p>
+        <h1 class="display-4 fw-bold">Busca MLB</h1>
+        <p class="text-muted">Busque informações de produtos no ML</p>
     </div>
 
     <div class="row justify-content-center">
