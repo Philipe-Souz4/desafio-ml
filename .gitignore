@@ -35,6 +35,10 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
+# Configurações locais (credenciais)
+config/db.php
+config/params.php
+
 # Dependências
 vendor/
 
