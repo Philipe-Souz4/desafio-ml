@@ -45,9 +45,6 @@ vendor/
 # Cache e logs do Yii2
 runtime/
 
-# Assets gerados
-web/assets/
-
 # Arquivos do sistema
 .DS_Store
 Thumbs.db
