@@ -4,9 +4,9 @@ use yii\helpers\Html;
 $this->title = 'Busca Mercado Livre';
 
 $exemplos = [
-    'MLB4540404727',
-    'MLB6478021916',
-    'MLB6478017024',
+    'MLB1381222244',
+    'MLB-1689836021',
+    'MLB-1570636742',
 ];
 ?>
 
