@@ -1,17 +1,13 @@
 <?php
 use yii\helpers\Html;
-use yii\helpers\Url;
 
 $this->title = 'Busca Mercado Livre';
 
 $exemplos = [
-    'MLB1381222244',
-    'MLB-1689836021',
-    'MLB-1570636742',
+    'MLB4540404727',
+    'MLB6478021916',
+    'MLB6478017024',
 ];
-
-// URL base para o JS montar o redirect
-$baseUrl = Url::to(['produto/detalhes']) . '/';
 ?>
 
 <div class="site-index container py-5">
@@ -29,7 +25,6 @@ $baseUrl = Url::to(['produto/detalhes']) . '/';
                         'class'       => 'form-control form-control-lg',
                         'placeholder' => 'Ex: MLB4540404727',
                         'id'          => 'meli_id_input',
-                        'required'    => true,
                     ]) ?>
                     <button class="btn btn-primary px-4" onclick="buscarProduto()">Buscar</button>
                 </div>
@@ -39,7 +34,7 @@ $baseUrl = Url::to(['produto/detalhes']) . '/';
             <div class="mt-3 text-center">
                 <small class="text-muted me-2">Exemplos:</small>
                 <?php foreach ($exemplos as $id): ?>
-                    <a href="<?= Url::to(['produto/detalhes', 'meli_id' => $id]) ?>"
+                    <a href="/produto/<?= $id ?>"
                        class="badge bg-secondary text-decoration-none me-1 p-2"
                        style="font-size: 13px;">
                         <?= $id ?>
@@ -56,10 +51,10 @@ $baseUrl = Url::to(['produto/detalhes']) . '/';
 function buscarProduto() {
     var id = document.getElementById('meli_id_input').value.trim();
     if (!id) return;
-    window.location.href = '<?= Url::to(['produto/']) ?>/' + id.replace(/-/g, '').toUpperCase();
+    var idLimpo = id.replace(/[-\s]/g, '').toUpperCase();
+    window.location.href = '/produto/' + idLimpo;
 }
 
-// Permite buscar pressionando Enter
 document.getElementById('meli_id_input').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') buscarProduto();
 });

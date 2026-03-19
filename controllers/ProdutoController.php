@@ -47,34 +47,45 @@ class ProdutoController extends Controller
         $tokenModel = MeliTokens::find()->one();
 
         if (!$tokenModel) {
-            throw new \Exception('Credenciais não encontradas. <a href="/token/index">Configure os tokens de acesso</a>.');
+            throw new \Exception('Credenciais não encontradas. Acesse /token para configurar.');
         }
 
-        $client   = new Client();
-        $response = $client->createRequest()
+        $client     = new Client();
+        $response   = $client->createRequest()
             ->setMethod('GET')
             ->setUrl("https://api.mercadolibre.com/items/{$meli_id}")
             ->addHeaders(['Authorization' => 'Bearer ' . $tokenModel->access_token])
             ->send();
 
+        $statusCode = (int) $response->getStatusCode();
+
         // Token expirado: renova e tenta novamente uma única vez
-        if ($response->getStatusCode() === 401 && !$isRetry) {
+        if ($statusCode === 401 && !$isRetry) {
+            Yii::info("Token expirado para {$meli_id}. Tentando renovar...", __METHOD__);
+
             if ($this->renewToken($tokenModel)) {
+                Yii::info("Token renovado. Repetindo requisição para {$meli_id}...", __METHOD__);
                 return $this->obterDadosProduto($meli_id, true);
             }
-            throw new \Exception('Sessão expirada. <a href="/token/index">Renove o token de acesso</a>.');
+
+            throw new \Exception('Token expirado e não foi possível renovar automaticamente. Acesse /token para renovar.');
         }
 
-        if ($response->getStatusCode() === 404) {
+        // Retry também retornou 401 — token recém renovado não funcionou
+        if ($statusCode === 401 && $isRetry) {
+            throw new \Exception('Falha após renovação do token. Acesse /token para renovar manualmente.');
+        }
+
+        if ($statusCode === 404) {
             throw new \Exception("Produto '{$meli_id}' não encontrado no Mercado Livre.");
         }
 
         if (!$response->isOk) {
             $msg = $response->data['message'] ?? 'Erro desconhecido na API.';
-            throw new \Exception("Erro ao buscar produto: {$msg}");
+            throw new \Exception("Erro {$statusCode} ao buscar produto: {$msg}");
         }
 
-        // Retorna apenas os campos exigidos
+        // Retorna apenas os campos exigidos pelo desafio
         $data = $response->data;
         return [
             'id'                 => $data['id']                 ?? '—',
@@ -101,7 +112,7 @@ class ProdutoController extends Controller
             ->addHeaders(['Content-Type' => 'application/x-www-form-urlencoded'])
             ->setData([
                 'grant_type'    => 'refresh_token',
-                'client_id'     => $params['meliClientId'],
+                'client_id'     => (string) $params['meliClientId'],
                 'client_secret' => $params['meliClientSecret'],
                 'refresh_token' => $tokenModel->refresh_token,
             ])
@@ -111,8 +122,23 @@ class ProdutoController extends Controller
             $tokenModel->access_token  = $response->data['access_token'];
             $tokenModel->refresh_token = $response->data['refresh_token'];
             $tokenModel->updated_at    = time();
-            return $tokenModel->save();
+
+            $saved = $tokenModel->save();
+
+            if (!$saved) {
+                Yii::error('Falha ao salvar token renovado: ' . json_encode($tokenModel->errors), __METHOD__);
+            } else {
+                Yii::info('Token salvo no banco com sucesso.', __METHOD__);
+            }
+
+            return $saved;
         }
+
+        Yii::error(
+            'Falha ao renovar token. Status: ' . $response->getStatusCode() .
+            ' | Resposta: ' . json_encode($response->data),
+            __METHOD__
+        );
 
         return false;
     }
