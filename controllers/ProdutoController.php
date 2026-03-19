@@ -37,7 +37,7 @@ class ProdutoController extends Controller
      * Obtém os dados do produto via API do Mercado Livre.
      * Em caso de token expirado (401), renova automaticamente e tenta novamente.
      *
-     * @param  string $meli_id  ID do produto no ML (ex: MLB1381222244)
+     * @param  string $meli_id  ID do produto no ML
      * @param  bool   $isRetry  Indica se já é uma segunda tentativa após renovação
      * @return array            Dados relevantes do produto
      * @throws \Exception       Em caso de erro na API
@@ -74,7 +74,7 @@ class ProdutoController extends Controller
             throw new \Exception("Erro ao buscar produto: {$msg}");
         }
 
-        // Retorna apenas os campos relevantes exigidos pelo desafio
+        // Retorna apenas os campos exigidos
         $data = $response->data;
         return [
             'id'                 => $data['id']                 ?? '—',
