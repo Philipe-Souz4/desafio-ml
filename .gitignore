@@ -35,7 +35,7 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
-# Configurações locais (credenciais)
+# Configurações locais
 config/db.php
 config/params.php
 
@@ -65,4 +65,3 @@ desktop.ini
 
 # Composer
 composer.lock
-config/params.php
