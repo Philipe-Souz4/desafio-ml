@@ -1,57 +1,18 @@
 @echo off
-chcp 65001 >nul
 echo ==========================================
-echo   Desafio Mercado Livre — Instalacao
+echo Instalando Dependencias e Banco de Dados
 echo ==========================================
 
 echo.
-echo 1. Verificando PHP...
-php -v >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERRO] PHP nao encontrado. Instale o PHP 7.4+ e adicione ao PATH.
-    pause
-    exit /b 1
-)
-php -v | findstr /i "PHP"
+echo 1. Instalando pacotes via Composer...
+call composer install
 
 echo.
-echo 2. Verificando Composer...
-composer -V >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERRO] Composer nao encontrado. Instale em https://getcomposer.org
-    pause
-    exit /b 1
-)
-
-echo.
-echo 3. Instalando dependencias via Composer...
-call composer install --no-interaction --prefer-dist
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao instalar dependencias.
-    pause
-    exit /b 1
-)
-
-echo.
-echo 4. Copiando arquivo de configuracao...
-if not exist config\db.php (
-    copy config\db.php.example config\db.php >nul
-    echo [OK] config\db.php criado. Edite com suas credenciais do PostgreSQL.
-) else (
-    echo [OK] config\db.php ja existe.
-)
-
-echo.
-echo 5. Rodando migrations do banco de dados...
+echo 2. Rodando Migrations do Banco de Dados...
 php yii migrate --interactive=0
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha nas migrations. Verifique as configuracoes em config\db.php
-    pause
-    exit /b 1
-)
 
 echo.
-echo 6. Limpando cache...
+echo 3. Limpando o Cache...
 php yii cache/flush-all
 
 echo.
